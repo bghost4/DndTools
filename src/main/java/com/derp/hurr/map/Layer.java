@@ -15,6 +15,16 @@ import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/* Layer Messages *
+ * AddMapItem   <MapItem>
+ * SetMapItemLocation   <X,Y>
+ * PlayerPing <X,Y>
+ * RevalFogArea <Area UUID>
+ * PlayerDraw   <List[Drawables]>
+ * AllowMovement < MapItemId,List<Player> >
+ */
+
 public class Layer extends Pane {
     private ImageView base;
     private Canvas fogLayer;
