@@ -1,5 +1,6 @@
-package com.derp.hurr.data;
+package com.derp.hurr.data.Character;
 
+import com.derp.hurr.data.item.BaseItem;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.util.List;
@@ -7,5 +8,5 @@ import java.util.List;
 public class NPC {
     SimpleStringProperty name = new SimpleStringProperty();
     BasicStats stats;
-    List<Item> inventory;
+    List<BaseItem> inventory;
 }

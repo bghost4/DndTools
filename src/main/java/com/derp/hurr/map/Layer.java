@@ -86,7 +86,7 @@ public class Layer extends Pane {
         i.setOnMouseDragged(this::dragMove);
 
 
-        System.out.println("Item added to "+getName());
+        System.out.println("BaseItem added to "+getName());
     }
 
     public String getName() {

@@ -1,4 +1,4 @@
-package com.derp.hurr.data;
+package com.derp.hurr.data.Character;
 
 public enum Condition {
     Blinded,

@@ -106,7 +106,7 @@ public class Mapbuilder extends VBox {
 
         MenuItem miRename = new MenuItem("Rename Layer");
         MenuItem addNPC = new MenuItem("Add NPC to Layer");
-        MenuItem addItem = new MenuItem( "Add Other Item");
+        MenuItem addItem = new MenuItem( "Add Other BaseItem");
         MenuItem addShapeMarker = new MenuItem("Add Shape Marker");
 
             miRename.setOnAction(this::renameLayer);
