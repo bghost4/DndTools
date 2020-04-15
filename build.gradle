@@ -1,11 +1,25 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group 'com.derp.hurr'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
+
+application {
+    mainClassName = 'com.derp.hurr.whiteboard.WhiteboardClient'
+}
+
+jar {
+    manifest {
+        attributes(
+               // 'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'Main-Class': 'com.derp.hurr.whiteboard.WhiteboardClient'
+        )
+    }
+}
 
 repositories {
     mavenCentral()
