@@ -4,7 +4,7 @@ import javafx.geometry.Point2D;
 
 import java.io.Serializable;
 
-class Point implements Serializable {
+class Point {
     public final double x,y;
 
     public Point(Point2D src) {

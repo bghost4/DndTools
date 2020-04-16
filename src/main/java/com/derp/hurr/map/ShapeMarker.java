@@ -1,7 +1,6 @@
 package com.derp.hurr.map;
 
 import com.derp.hurr.data.DataItem;
-import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -9,13 +8,20 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 
+import java.util.UUID;
+
 public class ShapeMarker extends MapItem {
 
     Shape s;
     Paint p;
     DataItem item;
-    Layer lref;
-    Group gref;
+
+    private final UUID identifier;
+
+    @Override
+    public UUID getIdentifier() {
+        return identifier;
+    }
 
     @Override
     public <T> T visit(MapItemVisitor<T> v) {
@@ -24,11 +30,9 @@ public class ShapeMarker extends MapItem {
 
     public enum MIShape { Circle, Square, Diamond, Triangle, Hexagon, Octagon, Arrow }
 
-    public void setLayerRef(Layer l) { lref = l; }
+    public ShapeMarker(MIShape shape, Paint color, DataItem item, UUID id) {
 
-    public void setGref(Group g) { gref = g; }
-
-    public ShapeMarker(MIShape shape, Paint color, DataItem item) {
+        if( id == null ) { identifier = UUID.randomUUID(); } else { identifier = id; }
 
         p = color;
         this.item = item;
@@ -43,22 +47,18 @@ public class ShapeMarker extends MapItem {
             case Diamond:
                 Polygon poly = new Polygon();
 
-                poly.getPoints().addAll(new Double[] {
-                        25.0, 50.0,
+                poly.getPoints().addAll(25.0, 50.0,
                         50.0, 0.0,
                         75.0, 50.0,
-                        50.0,100.0
-                });
+                        50.0,100.0);
 
                 s = poly;
                 break;
             case Triangle:
                 Polygon ptri = new Polygon();
-                ptri.getPoints().addAll(new Double[] {
-                        50.0,0.0,
+                ptri.getPoints().addAll(50.0,0.0,
                         100.0,100.0,
-                        0.0,100.0
-                });
+                        0.0,100.0);
                 s = ptri;
                 break;
             case Hexagon:
@@ -76,16 +76,6 @@ public class ShapeMarker extends MapItem {
         s.setFill(Color.TRANSPARENT);
 
         this.getChildren().add(s);
-
-//        s.setOnMouseDragged(me -> {
-//            System.out.println("Mouse Dragged");
-//
-//            if(lref != null) {
-//
-//            }
-//
-//        });
-
 
     }
 

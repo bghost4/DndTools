@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.UUID;
 
 public class Mapbuilder extends VBox {
 
@@ -115,7 +116,7 @@ public class Mapbuilder extends VBox {
                 if( lstLayers.getSelectionModel().getSelectedItem() != null) {
 
                     Layer layer = lstLayers.getSelectionModel().getSelectedItem();
-                    layer.addMapItem(new ShapeMarker(ShapeMarker.MIShape.Circle, Color.BLUEVIOLET,null),null);
+                    layer.addMapItem(new ShapeMarker(ShapeMarker.MIShape.Circle, Color.BLUEVIOLET,null, UUID.randomUUID()),null);
                     System.out.println("Added Shape");
                 } else {
                     System.out.println("Could not get a Lock on the Layer");

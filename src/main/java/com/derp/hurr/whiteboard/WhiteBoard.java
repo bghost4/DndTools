@@ -1,7 +1,9 @@
 package com.derp.hurr.whiteboard;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import javafx.geometry.Point2D;
+import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
@@ -15,13 +17,12 @@ import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class WhiteBoard extends VBox {
@@ -34,6 +35,15 @@ public class WhiteBoard extends VBox {
     private final TextField txtPort;
     private final ColorPicker uiColorPicker;
     private final Button btnConnect;
+    private final ObjectMapper mapper;
+
+    private Path path;
+
+    private final List<Path> figures = new ArrayList<>();
+
+    enum Mode { Select, FreeHand, Line }
+
+    private Mode mode;
 
     public WhiteBoard() {
 
@@ -54,6 +64,9 @@ public class WhiteBoard extends VBox {
             connect();
         });
 
+        mapper = new ObjectMapper();
+        mapper.enableDefaultTyping();
+
         connectPaneControls();
 
         HBox hb = new HBox();
@@ -65,73 +78,74 @@ public class WhiteBoard extends VBox {
 
     private void connectPaneControls() {
 
-        final ArrayList<Point2D> pnts = new ArrayList<>();
-
         pane.setOnMousePressed(me ->  {
-            pnts.clear();
-            pnts.add(new Point2D(me.getX(),me.getY()));
+            path = new Path();
+            path.setId(UUID.randomUUID().toString());
+            path.setStrokeWidth(2.0);
+            path.setStroke(Color.BLACK);
+            path.getElements().add(new MoveTo(me.getX(),me.getY()));
+            pane.getChildren().add(new Group(path));
         });
 
         pane.setOnMouseReleased( me -> {
-            pnts.add(new Point2D(me.getX(),me.getY()));
-            System.out.println(String.format("%d points",pnts.size()));
+            path.getElements().add(new LineTo(me.getX(),me.getY()));
+            //System.out.println(String.format("%d points",pnts.size()));
             try {
-                sendMessage(new ArrayList<>(pnts));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            //send message to server
-            try {
-                sendMessage(pnts);
+                sendMessage(new Figure(path, UUID.fromString(path.getId())));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
 
         pane.setOnMouseDragged( me -> {
-            Point2D nextPoint = new Point2D(me.getX(),me.getY() );
-            Point2D prevPoint = pnts.get(pnts.size()-1);
-            pnts.add(nextPoint);
-            Line l = new Line(prevPoint.getX(),prevPoint.getY(),nextPoint.getX(),nextPoint.getY());
-            pane.getChildren().add(l);
+            path.getElements().add(new LineTo(me.getX(),me.getY()));
         });
 
     }
 
-    private void sendMessage(List<Point2D> point2DS) throws IOException {
+    private void sendMessage(Figure f) throws IOException {
 
-        ArrayList<Point> pnts = new ArrayList(point2DS.stream().sequential().map(a -> new Point(a)).collect(Collectors.toList()));
+        //Message m = new Message();
 
         if( sock.isConnected() && out != null ) {
-            out.writeObject(pnts);
+            ByteArrayOutputStream bao = new ByteArrayOutputStream();
+            mapper.writeValue(bao,f);
+            Message m = new Message(Message.Type.Create,bao.toByteArray());
+            out.writeObject(m);
         }
     }
 
 
-    private void recieveMessage(List<Point> line) {
-        Path p = new Path();
+    private void recieveMessage(Message m) {
+        if(m.getType() == Message.Type.Create) {
+            ByteArrayInputStream bais = new ByteArrayInputStream(m.getData());
+            try {
+                Figure f = mapper.readValue(bais,Figure.class);
+                Path p = new Path();
+                p.setStroke(Color.BLUE);
+                p.setStrokeWidth(2.0);
+                p.getElements().addAll(f.getPathElements());
+                p.setId(f.getId().toString());
 
-        MoveTo m = new MoveTo(line.get(0).x,line.get(0).y);
+                pane.getChildren().add(new Group(p));
 
-        p.setStroke(Color.BLUE);
-        p.setStrokeWidth(5.0);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-        for(int i = 1; i < line.size(); i++ ) {
-            LineTo lt = new LineTo(line.get(i).x,line.get(i).y);
-            p.getElements().add(lt);
         }
-
-        pane.getChildren().add(p);
-
     }
 
     private void connect() {
 
-
-
-
-
+            if(sock != null && sock.isConnected()) {
+                try {
+                    out.close();
+                    sock.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
             Runnable r = new Runnable() {
                 @Override
@@ -149,11 +163,12 @@ public class WhiteBoard extends VBox {
 
                                 System.out.println("Got An Object");
 
-                                if (o instanceof ArrayList) {
-                                    ArrayList<Point> line = (ArrayList<Point>) o;
+                                if (o instanceof Message) {
                                     Platform.runLater(() -> {
-                                        recieveMessage(line);
+                                        recieveMessage((Message)o);
                                     });
+                                } else {
+                                    System.err.println("Object was Not Message");
                                 }
 
                             } catch (IOException e) {
@@ -178,8 +193,8 @@ public class WhiteBoard extends VBox {
             };
 
             Thread listener = new Thread(r);
+            listener.setDaemon(true);
             listener.start();
-
 
     }
 

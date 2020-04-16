@@ -1,4 +1,10 @@
 package com.derp.hurr.data;
 
-public class DataItem {
+import java.util.UUID;
+
+public interface DataItem {
+    UUID getIdentifier();
+
+
+
 }

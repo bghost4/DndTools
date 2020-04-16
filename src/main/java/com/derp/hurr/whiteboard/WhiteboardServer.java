@@ -32,6 +32,7 @@ public class WhiteboardServer {
                     WhiteboardUser user = new WhiteboardUser(client, this);
                     users.add(user);
                     Thread t = new Thread(user);
+                    t.setDaemon(true);
                     t.start();
                 }
             } catch (IOException e) {
@@ -52,7 +53,7 @@ public class WhiteboardServer {
 
     }
 
-    public synchronized void sendMessage(WhiteboardUser from,ArrayList<Point> b) {
+    public synchronized void sendMessage(WhiteboardUser from,Message b) {
         System.out.println("Sending Message from: "+from.id);
         users.stream().filter( u -> u != from).forEach( u -> u.giveMessage(b));
     }

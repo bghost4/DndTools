@@ -16,10 +16,9 @@ public class WhiteboardUser implements Runnable {
     public WhiteboardUser(Socket s,WhiteboardServer srv) {
         this.srv = srv;
         this.s = s;
-
     }
 
-    public void giveMessage(ArrayList<Point> pnts) {
+    public void giveMessage(Message pnts) {
         try {
             out.writeObject(pnts);
         } catch(Exception e) {
@@ -35,15 +34,15 @@ public class WhiteboardUser implements Runnable {
             in = new ObjectInputStream(s.getInputStream());
 
             while(true && s.isConnected()) {
-                Object o = in.read();
-                if( o instanceof ArrayList) {
-                    srv.sendMessage(this,(ArrayList<Point>) o );
+                Object o = in.readObject();
+                if( o instanceof Message) {
+                    srv.sendMessage(this,(Message) o );
                 } else {
                     System.err.println("Object was: "+o.getClass().getName());
                 }
             }
             srv.removeUser(this,new Exception("User Quit"));
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             srv.removeUser(this,e);
         }
     }
