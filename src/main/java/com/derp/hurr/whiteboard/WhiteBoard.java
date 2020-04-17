@@ -1,35 +1,35 @@
 package com.derp.hurr.whiteboard;
 
+import com.derp.hurr.whiteboard.messageobjects.*;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
-import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class WhiteBoard extends VBox {
 
     Socket sock;
     private ObjectOutputStream out;
 
+    private final ScrollPane scrollPane;
     private final Pane pane;
     private final TextField txtHostname;
     private final TextField txtPort;
@@ -37,20 +37,27 @@ public class WhiteBoard extends VBox {
     private final Button btnConnect;
     private final ObjectMapper mapper;
 
-    private Path path;
+    private final Map<UUID, Drawable> drawables;
 
-    private final List<Path> figures = new ArrayList<>();
+    private final ToggleGroup drawCntrlsGroup;
+
+    private UUID currentScreen;
+    private UUID playerID;
+
+
+    private Path path;
+    private SendableVisitor<Void, Void> defaultSenderVisitor;
 
     enum Mode { Select, FreeHand, Line }
 
-    private Mode mode;
-
     public WhiteBoard() {
 
+        drawables = new HashMap<>();
+        defaultSenderVisitor = new Reciever();
+
         pane = new Pane();
-        pane.setPrefSize(640,480);
-        pane.setMaxSize(640,480);
         pane.setMinSize(640,480);
+        scrollPane = new ScrollPane(pane);
 
         txtHostname = new TextField();
         txtHostname.setPromptText("Hostname");
@@ -64,15 +71,26 @@ public class WhiteBoard extends VBox {
             connect();
         });
 
+        ToggleButton tglSelect,tglFreeHand,tglLine;
+
+        HBox tbHB = new HBox();
+        tglSelect = new ToggleButton("S");
+        tglFreeHand = new ToggleButton("F");
+        tglLine = new ToggleButton("L");
+
+        drawCntrlsGroup = new ToggleGroup();
+        drawCntrlsGroup.getToggles().addAll(tglSelect,tglFreeHand,tglLine);
+
+        tbHB.getChildren().addAll(tglSelect,tglFreeHand,tglLine);
+
         mapper = new ObjectMapper();
         mapper.enableDefaultTyping();
 
         connectPaneControls();
 
         HBox hb = new HBox();
-
         hb.getChildren().addAll(new Label("Hostname: "),txtHostname,new Label("Port: "),txtPort,btnConnect);
-        this.getChildren().addAll(hb,pane);
+        this.getChildren().addAll(hb,scrollPane);
 
     }
 
@@ -91,7 +109,8 @@ public class WhiteBoard extends VBox {
             path.getElements().add(new LineTo(me.getX(),me.getY()));
             //System.out.println(String.format("%d points",pnts.size()));
             try {
-                sendMessage(new Figure(path, UUID.fromString(path.getId())));
+                //TODO replace UUID with a Valid UUID?
+                sendMessage(new Figure(path, UUID.fromString(path.getId())).asMessage(UUID.randomUUID(),mapper));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -103,37 +122,55 @@ public class WhiteBoard extends VBox {
 
     }
 
-    private void sendMessage(Figure f) throws IOException {
+    private void sendMessage(Message m) throws IOException {
+        if( m == null) { System.err.println("The Message was Null"); }
+        if( playerID == null) { System.err.println("The PlayerID Was Null"); }
 
-        //Message m = new Message();
-
+        m.setSource(playerID);
         if( sock.isConnected() && out != null ) {
-            ByteArrayOutputStream bao = new ByteArrayOutputStream();
-            mapper.writeValue(bao,f);
-            Message m = new Message(Message.Type.Create,bao.toByteArray());
             out.writeObject(m);
         }
     }
 
-
     private void recieveMessage(Message m) {
-        if(m.getType() == Message.Type.Create) {
-            ByteArrayInputStream bais = new ByteArrayInputStream(m.getData());
-            try {
-                Figure f = mapper.readValue(bais,Figure.class);
-                Path p = new Path();
-                p.setStroke(Color.BLUE);
-                p.setStrokeWidth(2.0);
-                p.getElements().addAll(f.getPathElements());
-                p.setId(f.getId().toString());
 
-                pane.getChildren().add(new Group(p));
+        try {
+            Class<?> objectClass = Class.forName(m.getClassName());
+            System.out.println("Message Type Class: "+m.getClassName());
+            System.out.println("Data Contents: "+new String(m.getData()));
 
-            } catch (IOException e) {
-                e.printStackTrace();
+            Object s = mapper.readValue(m.getData(),objectClass);
+            if(s instanceof Sendable) {
+                Sendable sendable = (Sendable)s;
+                sendable.map(defaultSenderVisitor,null);
             }
-
+        } catch (ClassNotFoundException e) {
+            //Protocol Error
+            e.printStackTrace();
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+//        if(m.getType() == Message.Type.Create) {
+//            ByteArrayInputStream bais = new ByteArrayInputStream(m.getData());
+//            try {
+//                Figure f = mapper.readValue(bais,Figure.class);
+//                Path p = new Path();
+//                p.setStroke(Color.BLUE);
+//                p.setStrokeWidth(2.0);
+//                p.getElements().addAll(f.getPathElements());
+//                p.setId(f.getId().toString());
+//
+//                pane.getChildren().add(new Group(p));
+//
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//        }
     }
 
     private void connect() {
@@ -196,6 +233,34 @@ public class WhiteBoard extends VBox {
             listener.setDaemon(true);
             listener.start();
 
+    }
+
+    private class Reciever implements SendableVisitor<Void,Void> {
+
+        @Override
+        public Void visit(Ping ping, Void otherData) {
+            return null;
+        }
+
+        @Override
+        public Void visit(Figure fig, Void otherData) {
+            Node n = fig.GenerateNode();
+            pane.getChildren().add(n);
+            return null;
+        }
+
+        @Override
+        public Void visit(PlayerKick playerKick, Void otherData) {
+            //PlayerKick is a targeted Object if you get this. exit the game
+            return null;
+        }
+
+        @Override
+        public Void visit(SetPlayerID setPlayerID, Void otherData) {
+            System.out.println("PlayerID is Set");
+            WhiteBoard.this.playerID = setPlayerID.getPlayerID();
+            return null;
+        }
     }
 
 }

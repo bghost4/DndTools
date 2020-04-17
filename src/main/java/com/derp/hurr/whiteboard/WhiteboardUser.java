@@ -1,8 +1,9 @@
 package com.derp.hurr.whiteboard;
 
+import com.derp.hurr.whiteboard.messageobjects.SetPlayerID;
+
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.UUID;
 
 public class WhiteboardUser implements Runnable {
@@ -11,11 +12,15 @@ public class WhiteboardUser implements Runnable {
     ObjectInputStream in;
     ObjectOutputStream out;
     WhiteboardServer srv;
+
     public final UUID id = UUID.randomUUID();
+
+
 
     public WhiteboardUser(Socket s,WhiteboardServer srv) {
         this.srv = srv;
         this.s = s;
+
     }
 
     public void giveMessage(Message pnts) {
@@ -32,6 +37,12 @@ public class WhiteboardUser implements Runnable {
         try {
             out = new ObjectOutputStream(s.getOutputStream());
             in = new ObjectInputStream(s.getInputStream());
+
+            SetPlayerID pid = new SetPlayerID();
+            pid.setPlayerID(this.id);
+            Message m = Message.createMessage(this.id,pid,srv.getMapper());
+            m.setSource(srv.getId());
+            out.writeObject(m);
 
             while(true && s.isConnected()) {
                 Object o = in.readObject();
