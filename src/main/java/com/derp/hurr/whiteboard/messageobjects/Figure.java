@@ -38,7 +38,7 @@ public class Figure implements Sendable,Drawable, Styleable {
     }
 
     @Override
-    public Node GenerateNode() {
+    public Node generateNode() {
             Path p = new Path();
             p.getElements().addAll(pathElements);
             p.setStyle(getStyle());

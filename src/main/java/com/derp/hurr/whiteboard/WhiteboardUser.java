@@ -8,13 +8,12 @@ import java.util.UUID;
 
 public class WhiteboardUser implements Runnable {
 
-    Socket s;
-    ObjectInputStream in;
-    ObjectOutputStream out;
-    WhiteboardServer srv;
+    private Socket s;
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
+    private WhiteboardServer srv;
 
     public final UUID id = UUID.randomUUID();
-
 
 
     public WhiteboardUser(Socket s,WhiteboardServer srv) {

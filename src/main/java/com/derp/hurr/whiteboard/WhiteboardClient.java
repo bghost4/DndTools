@@ -10,7 +10,7 @@ public class WhiteboardClient extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        WhiteBoard wb = new WhiteBoard();
+        WhiteBoardInterface wb = new WhiteBoardInterface();
 
         Scene s = new Scene(wb);
         primaryStage.setTitle("Whiteboard");

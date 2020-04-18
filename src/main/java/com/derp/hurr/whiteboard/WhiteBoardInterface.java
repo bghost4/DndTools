@@ -4,6 +4,9 @@ import com.derp.hurr.whiteboard.messageobjects.*;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -12,9 +15,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -24,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class WhiteBoard extends VBox {
+public class WhiteBoardInterface extends VBox {
 
     Socket sock;
     private ObjectOutputStream out;
@@ -50,14 +55,17 @@ public class WhiteBoard extends VBox {
 
     enum Mode { Select, FreeHand, Line }
 
-    public WhiteBoard() {
+    public WhiteBoardInterface() {
 
         drawables = new HashMap<>();
         defaultSenderVisitor = new Reciever();
 
         pane = new Pane();
         pane.setMinSize(640,480);
+        pane.setPrefSize(640,480);
         scrollPane = new ScrollPane(pane);
+
+        scrollPane.setMaxSize(Double.MAX_VALUE,Double.MAX_VALUE);
 
         txtHostname = new TextField();
         txtHostname.setPromptText("Hostname");
@@ -88,6 +96,9 @@ public class WhiteBoard extends VBox {
 
         connectPaneControls();
 
+
+
+
         HBox hb = new HBox();
         hb.getChildren().addAll(new Label("Hostname: "),txtHostname,new Label("Port: "),txtPort,btnConnect);
         this.getChildren().addAll(hb,scrollPane);
@@ -97,6 +108,17 @@ public class WhiteBoard extends VBox {
     private void connectPaneControls() {
 
         pane.setOnMousePressed(me ->  {
+
+            if(me.isControlDown()) {
+                Ping p = new Ping(me.getX(),me.getY());
+                try {
+                    sendMessage(p.asMessage(UUID.randomUUID(),mapper));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+
             path = new Path();
             path.setId(UUID.randomUUID().toString());
             path.setStrokeWidth(2.0);
@@ -106,6 +128,14 @@ public class WhiteBoard extends VBox {
         });
 
         pane.setOnMouseReleased( me -> {
+
+            if(me.isControlDown()) {
+
+
+
+                return;
+            }
+
             path.getElements().add(new LineTo(me.getX(),me.getY()));
             //System.out.println(String.format("%d points",pnts.size()));
             try {
@@ -239,12 +269,36 @@ public class WhiteBoard extends VBox {
 
         @Override
         public Void visit(Ping ping, Void otherData) {
+
+            Circle c = new Circle();
+            c.setCenterX(ping.getxLocation());
+            c.setCenterY(ping.getyLocation());
+            c.setRadius(1);
+
+            c.setStroke(Color.BLUE);
+            c.setStrokeWidth(5.0);
+            c.setFill(Color.TRANSPARENT);
+
+            Timeline tl = new Timeline();
+            tl.getKeyFrames().addAll(
+                new KeyFrame(Duration.millis(1000),new KeyValue(c.radiusProperty(),50.0)),
+                new KeyFrame(Duration.millis(2000),new KeyValue(c.radiusProperty(),5.0))
+            );
+
+            //TODO put in own thread?
+            tl.setOnFinished(eh -> {
+                pane.getChildren().remove(c);
+            });
+
+            pane.getChildren().add(c);
+            tl.play();
+
             return null;
         }
 
         @Override
         public Void visit(Figure fig, Void otherData) {
-            Node n = fig.GenerateNode();
+            Node n = fig.generateNode();
             pane.getChildren().add(n);
             return null;
         }
@@ -258,7 +312,7 @@ public class WhiteBoard extends VBox {
         @Override
         public Void visit(SetPlayerID setPlayerID, Void otherData) {
             System.out.println("PlayerID is Set");
-            WhiteBoard.this.playerID = setPlayerID.getPlayerID();
+            WhiteBoardInterface.this.playerID = setPlayerID.getPlayerID();
             return null;
         }
     }
