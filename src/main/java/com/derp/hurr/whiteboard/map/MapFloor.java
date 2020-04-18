@@ -10,6 +10,16 @@ import java.util.UUID;
 public class MapFloor implements Drawable {
 
 
+    UUID myId;
+    List<FogArea> fogRegion;
+    /*
+    List<Drawable> drawing;
+    List<Drawable> tokens;
+    */
+    List<Object> boundaries;
+    byte[] image;
+
+
     public static class FogArea implements ID {
 
         private MapFloor parent;
@@ -26,11 +36,7 @@ public class MapFloor implements Drawable {
         }
     }
 
-    UUID myId;
-    List<FogArea> fogRegion;
-    List<Drawable> drawing;
-    List<Drawable> tokens;
-    List<Object> boundaries;
+
 
     public MapFloor() {
 

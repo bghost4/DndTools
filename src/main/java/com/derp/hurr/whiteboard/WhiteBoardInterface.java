@@ -83,8 +83,11 @@ public class WhiteBoardInterface extends VBox {
 
         HBox tbHB = new HBox();
         tglSelect = new ToggleButton("S");
+            tglSelect.setTooltip(new Tooltip("Select Items"));
         tglFreeHand = new ToggleButton("F");
+            tglFreeHand.setTooltip(new Tooltip("Freehand Draw"));
         tglLine = new ToggleButton("L");
+            tglLine.setTooltip(new Tooltip("Draw Lines"));
 
         drawCntrlsGroup = new ToggleGroup();
         drawCntrlsGroup.getToggles().addAll(tglSelect,tglFreeHand,tglLine);
@@ -96,12 +99,9 @@ public class WhiteBoardInterface extends VBox {
 
         connectPaneControls();
 
-
-
-
         HBox hb = new HBox();
         hb.getChildren().addAll(new Label("Hostname: "),txtHostname,new Label("Port: "),txtPort,btnConnect);
-        this.getChildren().addAll(hb,scrollPane);
+        this.getChildren().addAll(hb,scrollPane,tbHB);
 
     }
 
@@ -130,9 +130,6 @@ public class WhiteBoardInterface extends VBox {
         pane.setOnMouseReleased( me -> {
 
             if(me.isControlDown()) {
-
-
-
                 return;
             }
 
@@ -147,6 +144,7 @@ public class WhiteBoardInterface extends VBox {
         });
 
         pane.setOnMouseDragged( me -> {
+            if(me.isControlDown()) { return; }
             path.getElements().add(new LineTo(me.getX(),me.getY()));
         });
 
