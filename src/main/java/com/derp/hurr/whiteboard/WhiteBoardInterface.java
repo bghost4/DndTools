@@ -1,5 +1,6 @@
 package com.derp.hurr.whiteboard;
 
+import com.derp.hurr.whiteboard.map.MapFloor;
 import com.derp.hurr.whiteboard.messageobjects.*;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -311,6 +312,17 @@ public class WhiteBoardInterface extends VBox {
         public Void visit(SetPlayerID setPlayerID, Void otherData) {
             System.out.println("PlayerID is Set");
             WhiteBoardInterface.this.playerID = setPlayerID.getPlayerID();
+            return null;
+        }
+
+        @Override
+        public Void visit(MapFloor mf, Void otherData) {
+
+            Node n = mf.generateNode();
+            pane.getChildren().add(n);
+            n.toBack();
+
+
             return null;
         }
     }
