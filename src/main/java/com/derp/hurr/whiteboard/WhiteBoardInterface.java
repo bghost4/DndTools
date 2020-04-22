@@ -25,6 +25,7 @@ import javafx.util.Duration;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -245,6 +246,14 @@ public class WhiteBoardInterface extends VBox {
                                 running = false;
                             }
                         }
+                    } catch(ConnectException e )  {
+                        Platform.runLater(() -> {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setHeaderText("Connection Problem:");
+                            alert.setContentText(e.getStackTrace().toString());
+                            alert.showAndWait();
+                        });
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

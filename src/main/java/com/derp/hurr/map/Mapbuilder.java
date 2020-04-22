@@ -1,6 +1,7 @@
 package com.derp.hurr.map;
 
 
+import com.derp.hurr.whiteboard.map.MapFloor;
 import javafx.event.ActionEvent;
 import javafx.scene.Group;
 import javafx.scene.control.*;
@@ -23,7 +24,7 @@ import java.util.UUID;
 
 public class Mapbuilder extends VBox {
 
-    ListView<Layer> lstLayers;
+    ListView<MapFloor> lstLayers;
     ScrollPane scroll;
     Pane pane;
     Spinner<Double> spnZoom;
@@ -78,12 +79,12 @@ public class Mapbuilder extends VBox {
             protected void updateItem(Layer item, boolean empty) {
                 super.updateItem(item, empty);
                 if( item != null && !empty) {
-                    textProperty().unbind();
-                    textProperty().bind(item.nameProperty());
+                    //textProperty().unbind();
+                    //textProperty().bind(item.nameProperty());
                     setGraphic(null);
                 } else {
-                    textProperty().unbind();
-                    setText(null);
+                    //textProperty().unbind();
+                    //setText(null);
                     setGraphic(null);
                 }
 
@@ -95,9 +96,10 @@ public class Mapbuilder extends VBox {
     }
 
     private void hideLayer(ActionEvent actionEvent) {
-        Layer l = lstLayers.getSelectionModel().getSelectedItem();
+        MapFloor l = lstLayers.getSelectionModel().getSelectedItem();
         if( l != null) {
-            l.setVisible(!l.isVisible());
+            //FIXME
+            //l.setVisible(!l.isVisible());
         }
     }
 
@@ -114,9 +116,8 @@ public class Mapbuilder extends VBox {
 
             addShapeMarker.setOnAction(eh -> {
                 if( lstLayers.getSelectionModel().getSelectedItem() != null) {
-
-                    Layer layer = lstLayers.getSelectionModel().getSelectedItem();
-                    layer.addMapItem(new ShapeMarker(ShapeMarker.MIShape.Circle, Color.BLUEVIOLET,null, UUID.randomUUID()),null);
+                    MapFloor layer = lstLayers.getSelectionModel().getSelectedItem();
+                    //layer.addMapItem(new ShapeMarker(ShapeMarker.MIShape.Circle, Color.BLUEVIOLET,null, UUID.randomUUID()),null);
                     System.out.println("Added Shape");
                 } else {
                     System.out.println("Could not get a Lock on the Layer");
@@ -130,7 +131,7 @@ public class Mapbuilder extends VBox {
 
     private void removeSelectedLayer(ActionEvent actionEvent) {
 
-        Layer l = lstLayers.getSelectionModel().getSelectedItem();
+        MapFloor l = lstLayers.getSelectionModel().getSelectedItem();
         if( l != null) {
             removeLayer(l);
         }
@@ -158,7 +159,7 @@ public class Mapbuilder extends VBox {
     }
 
     public void renameLayer(ActionEvent evt) {
-        Layer active = lstLayers.getSelectionModel().getSelectedItem();
+        MapFloor active = lstLayers.getSelectionModel().getSelectedItem();
         if(active != null) {
             TextInputDialog dLayerName = new TextInputDialog(active.getName());
             dLayerName.setTitle("Rename Layer");
@@ -169,10 +170,13 @@ public class Mapbuilder extends VBox {
     }
 
     public void addLayer(InputStream s) {
-        Layer i = new Layer(new Image(s),"New Layer");
+        MapFloor i = new MapFloor(); //new Image(s),"New Layer");
+        i.setName( " New Floor ");
 
         lstLayers.getItems().add(i);
-        pane.getChildren().add(i);
+
+        //FIXME
+        pane.getChildren().add(i.);
 
     }
 
@@ -182,9 +186,10 @@ public class Mapbuilder extends VBox {
     }
 
     public void actionAdjust(ActionEvent e) {
-        Layer l = lstLayers.getSelectionModel().getSelectedItem();
+        MapFloor l = lstLayers.getSelectionModel().getSelectedItem();
         if( l != null) {
-            l.setOpacity(0.4);  //TODO make adjustable
+            //TODO FIXME
+            //l.setOpacity(0.4);  //TODO make adjustable
             AdjustDialog ad = new AdjustDialog(l);
             ad.showAndWait();
         }

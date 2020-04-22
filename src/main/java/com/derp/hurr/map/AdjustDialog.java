@@ -1,11 +1,12 @@
 package com.derp.hurr.map;
 
+import com.derp.hurr.whiteboard.map.MapFloor;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
 public class AdjustDialog extends Dialog<Void> {
 
-    public AdjustDialog(Layer l) {
+    public AdjustDialog(MapFloor l) {
 
         Spinner<Double> offX,offY,opacity;
         Button btnCW,btnRCCW;
