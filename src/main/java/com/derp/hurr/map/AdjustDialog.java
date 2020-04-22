@@ -30,12 +30,12 @@ public class AdjustDialog extends Dialog<Void> {
         //ew
         offX.getValueFactory().valueProperty().addListener( (ob,ov,nv) -> l.setLayoutX(nv) );
         offY.getValueFactory().valueProperty().addListener( (ob,ov,nv) -> l.setLayoutY(nv) );
-        opacity.valueProperty().addListener((ob,ov,nv) -> l.setOpacity(nv));
+        //opacity.valueProperty().addListener((ob,ov,nv) -> l.setOpacity(nv));
 
         this.getDialogPane().setContent(gp);
         this.getDialogPane().getButtonTypes().add(ButtonType.OK);
 
-        this.setResultConverter(btn -> { l.setOpacity(1.0); return null; } );
+        //this.setResultConverter(btn -> { l.setOpacity(1.0); return null; } );
 
     }
 

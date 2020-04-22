@@ -112,6 +112,9 @@ public class WhiteBoardInterface extends VBox {
         pane.setOnMousePressed(me ->  {
 
             if(me.isControlDown()) {
+
+                doPing(me.getX(),me.getY(),Color.GRAY);
+
                 Ping p = new Ping(me.getX(),me.getY());
                 try {
                     sendMessage(p.asMessage(UUID.randomUUID(),mapper));
@@ -149,6 +152,32 @@ public class WhiteBoardInterface extends VBox {
             if(me.isControlDown()) { return; }
             path.getElements().add(new LineTo(me.getX(),me.getY()));
         });
+
+    }
+
+    private void doPing(double x, double y,Color color) {
+        Circle c = new Circle();
+        c.setCenterX(x);
+        c.setCenterY(y);
+        c.setRadius(1);
+
+        c.setStroke(color);
+        c.setStrokeWidth(5.0);
+        c.setFill(Color.TRANSPARENT);
+
+        Timeline tl = new Timeline();
+        tl.getKeyFrames().addAll(
+                new KeyFrame(Duration.millis(500),new KeyValue(c.radiusProperty(),50.0)),
+                new KeyFrame(Duration.millis(1000),new KeyValue(c.radiusProperty(),5.0))
+        );
+
+        //TODO put in own thread?
+        tl.setOnFinished(eh -> {
+            pane.getChildren().remove(c);
+        });
+
+        pane.getChildren().add(c);
+        tl.play();
 
     }
 
@@ -278,28 +307,7 @@ public class WhiteBoardInterface extends VBox {
         @Override
         public Void visit(Ping ping, Void otherData) {
 
-            Circle c = new Circle();
-            c.setCenterX(ping.getxLocation());
-            c.setCenterY(ping.getyLocation());
-            c.setRadius(1);
-
-            c.setStroke(Color.BLUE);
-            c.setStrokeWidth(5.0);
-            c.setFill(Color.TRANSPARENT);
-
-            Timeline tl = new Timeline();
-            tl.getKeyFrames().addAll(
-                new KeyFrame(Duration.millis(1000),new KeyValue(c.radiusProperty(),50.0)),
-                new KeyFrame(Duration.millis(2000),new KeyValue(c.radiusProperty(),5.0))
-            );
-
-            //TODO put in own thread?
-            tl.setOnFinished(eh -> {
-                pane.getChildren().remove(c);
-            });
-
-            pane.getChildren().add(c);
-            tl.play();
+            doPing(ping.getxLocation(),ping.getyLocation(),ping.getColor());
 
             return null;
         }

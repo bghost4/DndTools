@@ -21,7 +21,6 @@ public class MapFloor implements Drawable, Sendable {
     UUID myId;
     String name;
     List<FogArea> fogRegion;
-
     double layoutX,layoutY;
 
     public double getLayoutX() {
@@ -40,10 +39,6 @@ public class MapFloor implements Drawable, Sendable {
         this.layoutY = layoutY;
     }
 
-    /*
-        List<Drawable> drawing;
-        List<Drawable> tokens;
-        */
     List<Object> boundaries;
     byte[] imageData;
 

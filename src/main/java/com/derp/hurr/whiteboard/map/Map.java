@@ -8,9 +8,10 @@ import java.util.UUID;
 
 public class Map implements Drawable {
 
-
     private List<MapFloor> floors;
     private MapFloor currentFloor;
+    private String mapName;
+    private UUID id;
 
     @Override
     public Node generateNode() {
@@ -24,11 +25,36 @@ public class Map implements Drawable {
 
     @Override
     public UUID getID() {
-        return null;
+        return id;
     }
 
     @Override
     public void setID(UUID id) {
-
+        this.id = id;
     }
+
+    public List<MapFloor> getFloors() {
+        return floors;
+    }
+
+    public void setFloors(List<MapFloor> floors) {
+        this.floors = floors;
+    }
+
+    public MapFloor getCurrentFloor() {
+        return currentFloor;
+    }
+
+    public void setCurrentFloor(MapFloor currentFloor) {
+        this.currentFloor = currentFloor;
+    }
+
+    public String getMapName() {
+        return mapName;
+    }
+
+    public void setMapName(String mapName) {
+        this.mapName = mapName;
+    }
+
 }

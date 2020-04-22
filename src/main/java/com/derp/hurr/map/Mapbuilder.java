@@ -1,6 +1,8 @@
 package com.derp.hurr.map;
 
 
+import com.derp.hurr.whiteboard.ObjectCache;
+import com.derp.hurr.whiteboard.map.Map;
 import com.derp.hurr.whiteboard.map.MapFloor;
 import javafx.event.ActionEvent;
 import javafx.scene.Group;
@@ -14,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,9 +31,11 @@ public class Mapbuilder extends VBox {
     ScrollPane scroll;
     Pane pane;
     Spinner<Double> spnZoom;
+    ObjectCache cache = new ObjectCache();
 
     Group zoomGroup;
 
+    Map map = new Map();
 
     public Mapbuilder() {
 
@@ -74,21 +79,20 @@ public class Mapbuilder extends VBox {
 
         this.getChildren().add(s);
 
-        lstLayers.setCellFactory( i -> new ListCell<Layer>() {
-            @Override
-            protected void updateItem(Layer item, boolean empty) {
-                super.updateItem(item, empty);
-                if( item != null && !empty) {
-                    //textProperty().unbind();
-                    //textProperty().bind(item.nameProperty());
-                    setGraphic(null);
-                } else {
-                    //textProperty().unbind();
-                    //setText(null);
-                    setGraphic(null);
+        lstLayers.setCellFactory( i -> {
+            return new ListCell<MapFloor>() {
+                @Override
+                protected void updateItem(MapFloor item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item != null && !empty) {
+                        setText(item.getName());
+                        setGraphic(null);
+                    } else {
+                        setText(null);
+                        setGraphic(null);
+                    }
                 }
-
-            }
+            };
         });
 
         lstLayers.setContextMenu(layerContextMenu());
@@ -143,17 +147,12 @@ public class Mapbuilder extends VBox {
         fc.setTitle("Open Image File");
 
         //TODO reset this later
-        fc.setInitialDirectory(Paths.get("/home/dmartin/dndmap").toFile());
+        //fc.setInitialDirectory(Paths.get("/home/dmartin/dndmap").toFile());
 
         File f = fc.showOpenDialog(null);
 
         if(f != null) {
-            try {
-                InputStream is = Files.newInputStream(f.toPath(), StandardOpenOption.READ);
-                addLayer(is);
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            addLayer(f);
         }
 
     }
@@ -169,20 +168,29 @@ public class Mapbuilder extends VBox {
 
     }
 
-    public void addLayer(InputStream s) {
+    public void addLayer(File f) {
         MapFloor i = new MapFloor(); //new Image(s),"New Layer");
         i.setName( " New Floor ");
+        i.setID(UUID.randomUUID());
+        try {
+            i.setImageData(Files.readAllBytes(f.toPath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        cache.putObject(i);
 
         lstLayers.getItems().add(i);
 
         //FIXME
-        pane.getChildren().add(i.);
+        pane.getChildren().add(cache.getNode(i.getID()));
 
     }
 
-    public void removeLayer(Layer l) {
+    public void removeLayer(MapFloor l) {
         lstLayers.getItems().remove(l);
-        pane.getChildren().remove(l);
+
+        //TODO pane.getChildren().remove(l);
     }
 
     public void actionAdjust(ActionEvent e) {
