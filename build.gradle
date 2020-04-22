@@ -11,17 +11,18 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = JavaVersion.VERSION_14
 targetCompatibility = JavaVersion.VERSION_14
 
-mainClassName = 'OSDungeon.main/com.derp.hurr.whiteboard.WhiteboardClient'
+mainClassName = 'OSDungeon.main/com.derp.hurr.OSDungeonLauncher'
 
 jlink {
 
     options = [ '--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages' ]
     launcher {
-        name = 'WhiteboardClient'
+        name = 'OSDungeon'
         //jvmArgs = [ '-Dprism.verbose=true', '-Djavafx.verbose=true' ]
     }
 
     targetPlatform('linux-64') {
+        //TODO find a way to specify these?
         jdkHome = '/opt/java/openjdk-14.0.1'
         addExtraModulePath("/opt/jmods/javafx-jmods-14.0.1")
     }

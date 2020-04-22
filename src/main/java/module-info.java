@@ -4,5 +4,5 @@ module OSDungeon.main {
     requires javafx.base;
     requires javafx.controls;
     requires javafx.graphics;
-    exports com.derp.hurr.whiteboard;
+    exports com.derp.hurr;
 }
