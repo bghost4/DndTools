@@ -1,4 +1,4 @@
-package com.derp.hurr.map;
+package com.derp.hurr.data.map;
 
 import com.derp.hurr.data.DataItem;
 import javafx.scene.paint.Color;

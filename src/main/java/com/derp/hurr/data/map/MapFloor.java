@@ -1,4 +1,4 @@
-package com.derp.hurr.map;
+package com.derp.hurr.data.map;
 
 import com.derp.hurr.whiteboard.Message;
 import com.derp.hurr.whiteboard.SendableVisitor;
@@ -77,6 +77,11 @@ public class MapFloor implements Drawable, Sendable {
     @Override
     public Message asMessage(UUID target, ObjectMapper m) throws JsonProcessingException {
         return Message.createMessage(target,this,m);
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.derp.hurr.ui;
 
+import com.derp.hurr.ui.editors.ContentManager;
+import com.derp.hurr.ui.editors.Mapbuilder;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -16,19 +18,17 @@ public class OSDungeonLauncher extends Application {
         Button btnClient = new Button("Launch as Player");
         Button btnDM = new Button("Launch as DM Screen");
         Button btnServer = new Button("Launch Server Only");
-        Button btnMapBuilder = new Button("Map Builder");
-
+        Button btnContentManager = new Button("Content Manager");
         Button btnQuit = new Button("Quit");
 
-        btnMapBuilder.setOnAction( eh -> {
-            Mapbuilder mb = new Mapbuilder();
+        btnContentManager.setOnAction(eh -> {
+            ContentManager cm = new ContentManager();
             Stage mb_stage = new Stage();
-            Scene mb_scene = new Scene(mb);
+            Scene mb_scene = new Scene(cm);
             mb_stage.setScene(mb_scene);
-            mb_stage.setTitle("Map Builder");
+            mb_stage.setTitle("Content Manager");
             mb_stage.show();
         });
-
 
         btnQuit.setOnAction(eh -> {
             Platform.exit();
@@ -55,7 +55,7 @@ public class OSDungeonLauncher extends Application {
             }
         });
 
-        vb.getChildren().addAll(btnClient,btnDM,btnServer,btnMapBuilder,btnQuit);
+        vb.getChildren().addAll(btnClient,btnDM,btnServer,btnContentManager,btnQuit);
 
         Scene s = new Scene(vb);
 

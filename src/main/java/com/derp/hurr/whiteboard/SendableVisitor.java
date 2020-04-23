@@ -1,6 +1,6 @@
 package com.derp.hurr.whiteboard;
 
-import com.derp.hurr.map.MapFloor;
+import com.derp.hurr.data.map.MapFloor;
 import com.derp.hurr.whiteboard.messageobjects.Figure;
 import com.derp.hurr.whiteboard.messageobjects.Ping;
 import com.derp.hurr.whiteboard.messageobjects.PlayerKick;

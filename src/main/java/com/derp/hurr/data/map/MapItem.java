@@ -1,10 +1,7 @@
-package com.derp.hurr.map;
+package com.derp.hurr.data.map;
 
 import com.derp.hurr.data.DataItem;
 import javafx.scene.Group;
-import javafx.scene.layout.Pane;
-
-import java.util.UUID;
 
 public abstract class MapItem extends Group implements DataItem {
 

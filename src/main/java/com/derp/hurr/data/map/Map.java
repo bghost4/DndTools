@@ -1,17 +1,22 @@
-package com.derp.hurr.map;
+package com.derp.hurr.data.map;
 
 import com.derp.hurr.whiteboard.messageobjects.Drawable;
 import javafx.scene.Node;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class Map implements Drawable {
 
-    private List<MapFloor> floors;
+    private ArrayList<MapFloor> floors = new ArrayList<>();
     private MapFloor currentFloor;
     private String mapName;
     private UUID id;
+
+    @Override
+    public String toString() {
+        return mapName;
+    }
 
     @Override
     public Node generateNode() {
@@ -33,20 +38,12 @@ public class Map implements Drawable {
         this.id = id;
     }
 
-    public List<MapFloor> getFloors() {
+    public ArrayList<MapFloor> getFloors() {
         return floors;
     }
 
-    public void setFloors(List<MapFloor> floors) {
+    public void setFloors(ArrayList<MapFloor> floors) {
         this.floors = floors;
-    }
-
-    public MapFloor getCurrentFloor() {
-        return currentFloor;
-    }
-
-    public void setCurrentFloor(MapFloor currentFloor) {
-        this.currentFloor = currentFloor;
     }
 
     public String getMapName() {

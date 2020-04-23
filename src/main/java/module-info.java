@@ -6,5 +6,11 @@ module OSDungeon.main {
     requires javafx.graphics;
     requires java.prefs;
 
-    exports com.derp.hurr;
+    //Appears to be needed by jackson
+    requires java.sql;
+
+    exports com.derp.hurr.ui;
+    exports com.derp.hurr.data;
+    exports com.derp.hurr.data.map;
+
 }

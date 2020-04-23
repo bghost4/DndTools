@@ -1,6 +1,6 @@
-package com.derp.hurr.ui;
+package com.derp.hurr.ui.editors;
 
-import com.derp.hurr.map.MapFloor;
+import com.derp.hurr.data.map.MapFloor;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 

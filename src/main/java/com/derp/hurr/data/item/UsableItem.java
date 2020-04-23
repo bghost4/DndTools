@@ -4,4 +4,5 @@ package com.derp.hurr.data.item;
 
 public class UsableItem extends BaseItem {
     int charges;
+    String effect;
 }

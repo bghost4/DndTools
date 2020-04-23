@@ -1,9 +1,9 @@
-package com.derp.hurr.ui;
+package com.derp.hurr.ui.editors;
 
 
 import com.derp.hurr.whiteboard.ObjectCache;
-import com.derp.hurr.map.Map;
-import com.derp.hurr.map.MapFloor;
+import com.derp.hurr.data.map.Map;
+import com.derp.hurr.data.map.MapFloor;
 import javafx.event.ActionEvent;
 import javafx.scene.Group;
 import javafx.scene.control.*;
@@ -25,14 +25,25 @@ public class Mapbuilder extends VBox {
     Pane pane;
     Spinner<Double> spnZoom;
     ObjectCache cache = new ObjectCache();
-
     Group zoomGroup;
 
-    Map map = new Map();
+    Map map;
+    ContentLibraryManager mgr;
 
-    public Mapbuilder() {
+    public static Map createNewMap(String MapName) {
+        Map smap = new Map();
+        smap.setMapName(MapName);
+        smap.setID(UUID.randomUUID());
+        return smap;
+    }
+
+    public Mapbuilder(ContentLibraryManager mgr,Map initialMap) {
+        this.mgr = mgr;
+        map = initialMap;
 
         lstLayers = new ListView<>();
+
+
         zoomGroup = new Group();
         pane = new Pane();
         zoomGroup.getChildren().add(pane);
@@ -67,10 +78,16 @@ public class Mapbuilder extends VBox {
         btnAdjust.setOnAction(this::actionAdjust);
         btnHide.setOnAction(this::hideLayer);
 
+        Button btnSave = new Button("Save");
+        btnSave.setOnAction( eh -> {
+            mgr.addMap(map);
+        } );
+
         SplitPane s = new SplitPane();
         s.getItems().addAll(vbMapView,vbLayers);
 
         this.getChildren().add(s);
+        this.getChildren().add(btnSave);
 
         lstLayers.setCellFactory( i -> {
             return new ListCell<MapFloor>() {
@@ -90,6 +107,12 @@ public class Mapbuilder extends VBox {
 
         lstLayers.setContextMenu(layerContextMenu());
 
+        for(MapFloor mf : map.getFloors()) {
+            lstLayers.getItems().add(mf);
+            cache.putObject(mf);
+            pane.getChildren().add(cache.getNode(mf.getID()));
+        }
+
     }
 
     private void hideLayer(ActionEvent actionEvent) {
@@ -99,6 +122,8 @@ public class Mapbuilder extends VBox {
             //l.setVisible(!l.isVisible());
         }
     }
+
+    public Map getMap() { return this.map; }
 
     private ContextMenu layerContextMenu() {
 
@@ -114,6 +139,7 @@ public class Mapbuilder extends VBox {
             addShapeMarker.setOnAction(eh -> {
                 if( lstLayers.getSelectionModel().getSelectedItem() != null) {
                     MapFloor layer = lstLayers.getSelectionModel().getSelectedItem();
+                    //TODO support MapItems?
                     //layer.addMapItem(new ShapeMarker(ShapeMarker.MIShape.Circle, Color.BLUEVIOLET,null, UUID.randomUUID()),null);
                     System.out.println("Added Shape");
                 } else {
@@ -157,6 +183,7 @@ public class Mapbuilder extends VBox {
             dLayerName.setTitle("Rename Layer");
             String newname = dLayerName.showAndWait().orElse(active.getName());
             active.setName(newname);
+
         }
 
     }
@@ -165,11 +192,14 @@ public class Mapbuilder extends VBox {
         MapFloor i = new MapFloor(); //new Image(s),"New Layer");
         i.setName( " New Floor ");
         i.setID(UUID.randomUUID());
+
         try {
             i.setImageData(Files.readAllBytes(f.toPath()));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        map.getFloors().add(i);
 
         cache.putObject(i);
 
