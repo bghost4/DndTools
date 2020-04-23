@@ -43,7 +43,6 @@ public class Mapbuilder extends VBox {
 
         lstLayers = new ListView<>();
 
-
         zoomGroup = new Group();
         pane = new Pane();
         zoomGroup.getChildren().add(pane);
@@ -79,9 +78,7 @@ public class Mapbuilder extends VBox {
         btnHide.setOnAction(this::hideLayer);
 
         Button btnSave = new Button("Save");
-        btnSave.setOnAction( eh -> {
-            mgr.addMap(map);
-        } );
+        btnSave.setOnAction( eh -> mgr.addMap(map));
 
         SplitPane s = new SplitPane();
         s.getItems().addAll(vbMapView,vbLayers);
@@ -89,20 +86,18 @@ public class Mapbuilder extends VBox {
         this.getChildren().add(s);
         this.getChildren().add(btnSave);
 
-        lstLayers.setCellFactory( i -> {
-            return new ListCell<MapFloor>() {
-                @Override
-                protected void updateItem(MapFloor item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (item != null && !empty) {
-                        setText(item.getName());
-                        setGraphic(null);
-                    } else {
-                        setText(null);
-                        setGraphic(null);
-                    }
+        lstLayers.setCellFactory( i -> new ListCell<>() {
+            @Override
+            protected void updateItem(MapFloor item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item != null && !empty) {
+                    setText(item.getName());
+                    setGraphic(null);
+                } else {
+                    setText(null);
+                    setGraphic(null);
                 }
-            };
+            }
         });
 
         lstLayers.setContextMenu(layerContextMenu());
@@ -116,11 +111,13 @@ public class Mapbuilder extends VBox {
     }
 
     private void hideLayer(ActionEvent actionEvent) {
+        /*
         MapFloor l = lstLayers.getSelectionModel().getSelectedItem();
         if( l != null) {
             //FIXME
             //l.setVisible(!l.isVisible());
         }
+        */
     }
 
     public Map getMap() { return this.map; }
@@ -137,6 +134,7 @@ public class Mapbuilder extends VBox {
             miRename.setOnAction(this::renameLayer);
 
             addShapeMarker.setOnAction(eh -> {
+                /*
                 if( lstLayers.getSelectionModel().getSelectedItem() != null) {
                     MapFloor layer = lstLayers.getSelectionModel().getSelectedItem();
                     //TODO support MapItems?
@@ -145,7 +143,9 @@ public class Mapbuilder extends VBox {
                 } else {
                     System.out.println("Could not get a Lock on the Layer");
                 }
+                 */
             });
+
 
 
         ctx.getItems().addAll(miRename,addNPC,addItem,addShapeMarker);
@@ -160,6 +160,8 @@ public class Mapbuilder extends VBox {
         }
 
     }
+
+    //public record person()
 
     public void actionAddLayer(ActionEvent e) {
         FileChooser fc = new FileChooser();
@@ -205,7 +207,6 @@ public class Mapbuilder extends VBox {
 
         lstLayers.getItems().add(i);
 
-        //FIXME
         pane.getChildren().add(cache.getNode(i.getID()));
 
     }
