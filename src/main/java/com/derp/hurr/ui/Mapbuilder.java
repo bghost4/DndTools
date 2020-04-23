@@ -1,28 +1,21 @@
-package com.derp.hurr.map;
+package com.derp.hurr.ui;
 
 
 import com.derp.hurr.whiteboard.ObjectCache;
-import com.derp.hurr.whiteboard.map.Map;
-import com.derp.hurr.whiteboard.map.MapFloor;
+import com.derp.hurr.map.Map;
+import com.derp.hurr.map.MapFloor;
 import javafx.event.ActionEvent;
 import javafx.scene.Group;
 import javafx.scene.control.*;
 
-import javafx.scene.image.Image;
-
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.UUID;
 
 public class Mapbuilder extends VBox {

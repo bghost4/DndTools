@@ -1,4 +1,4 @@
-package com.derp.hurr.whiteboard.map;
+package com.derp.hurr.map;
 
 import com.derp.hurr.whiteboard.Message;
 import com.derp.hurr.whiteboard.SendableVisitor;

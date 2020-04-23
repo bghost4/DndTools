@@ -1,7 +1,5 @@
-package com.derp.hurr;
+package com.derp.hurr.ui;
 
-import com.derp.hurr.map.Mapbuilder;
-import com.derp.hurr.whiteboard.WhiteBoardInterface;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;

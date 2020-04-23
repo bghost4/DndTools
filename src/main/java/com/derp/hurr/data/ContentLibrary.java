@@ -2,7 +2,7 @@ package com.derp.hurr.data;
 
 import com.derp.hurr.data.Character.NPC;
 import com.derp.hurr.data.item.Item;
-import com.derp.hurr.whiteboard.map.Map;
+import com.derp.hurr.map.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;

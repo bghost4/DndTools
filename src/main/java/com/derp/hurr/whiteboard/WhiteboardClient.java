@@ -1,5 +1,6 @@
 package com.derp.hurr.whiteboard;
 
+import com.derp.hurr.ui.WhiteBoardInterface;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;

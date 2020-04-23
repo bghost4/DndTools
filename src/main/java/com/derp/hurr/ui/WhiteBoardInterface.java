@@ -1,6 +1,8 @@
-package com.derp.hurr.whiteboard;
+package com.derp.hurr.ui;
 
-import com.derp.hurr.whiteboard.map.MapFloor;
+import com.derp.hurr.whiteboard.Message;
+import com.derp.hurr.whiteboard.SendableVisitor;
+import com.derp.hurr.map.MapFloor;
 import com.derp.hurr.whiteboard.messageobjects.*;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;

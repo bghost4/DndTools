@@ -1,4 +1,4 @@
-package com.derp.hurr.whiteboard.map;
+package com.derp.hurr.map;
 
 import com.derp.hurr.whiteboard.messageobjects.Drawable;
 import javafx.scene.Node;

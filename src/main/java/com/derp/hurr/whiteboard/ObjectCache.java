@@ -1,6 +1,6 @@
 package com.derp.hurr.whiteboard;
 
-import com.derp.hurr.whiteboard.map.Map;
+import com.derp.hurr.map.Map;
 import com.derp.hurr.whiteboard.messageobjects.Drawable;
 import javafx.scene.Node;
 
